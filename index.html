@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Human 101 — how to be a person when AI can do everything</title>
+<meta name="description" content="A tiny tutorial for staying human in the AI era. Copy-paste prompts and example conversations for the small skills that still matter." />
+<style>
+  :root {
+    --bg: #f7f4ee;
+    --panel: #fffdf8;
+    --ink: #1a1714;
+    --ink-soft: #5a544c;
+    --line: #e6dfd2;
+    --accent: #c2410c;
+    --accent-soft: #fde7d8;
+    --you-bubble: #1a1714;
+    --you-ink: #fffdf8;
+    --ai-bubble: #f1ebdc;
+    --ai-ink: #1a1714;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+  /* sidebar */
+  aside {
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    padding: 28px 22px 60px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  aside .brand {
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+  }
+  aside .brand-sub {
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin: 0 0 28px;
+  }
+  .domain { margin-bottom: 22px; }
+  .domain h3 {
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+  .domain ul { list-style: none; padding: 0; margin: 0; }
+  .domain li {
+    padding: 6px 10px;
+    margin: 2px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ink);
+    transition: background 0.1s;
+  }
+  .domain li:hover { background: var(--accent-soft); }
+  .domain li.active {
+    background: var(--accent);
+    color: var(--panel);
+    font-weight: 600;
+  }
+  /* main */
+  main {
+    padding: 56px 64px 120px;
+    max-width: 760px;
+    width: 100%;
+  }
+  .crumb {
+    color: var(--ink-soft);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 6px;
+  }
+  h1 {
+    font-size: 36px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+    font-weight: 800;
+  }
+  .why {
+    color: var(--ink-soft);
+    font-size: 17px;
+    margin: 0 0 32px;
+    max-width: 60ch;
+  }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    font-weight: 700;
+    margin: 36px 0 10px;
+  }
+  /* prompt card */
+  .prompt {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    position: relative;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14.5px;
+    white-space: pre-wrap;
+    color: var(--ink);
+  }
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .copy-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
+  .copy-btn.copied { background: var(--accent); color: var(--panel); border-color: var(--accent); }
+  /* conversation */
+  .convo { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+  .turn { display: flex; flex-direction: column; max-width: 78%; }
+  .turn.you { align-self: flex-end; align-items: flex-end; }
+  .turn.ai  { align-self: flex-start; align-items: flex-start; }
+  .role {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin: 0 6px 4px;
+    font-weight: 700;
+  }
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  .you .bubble { background: var(--you-bubble); color: var(--you-ink); border-bottom-right-radius: 4px; }
+  .ai  .bubble { background: var(--ai-bubble);  color: var(--ai-ink);  border-bottom-left-radius: 4px; }
+  .takeaway {
+    margin-top: 36px;
+    padding: 16px 20px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .takeaway strong { color: var(--accent); }
+  /* footer */
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  /* mobile */
+  .menu-btn {
+    display: none;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 20;
+    background: var(--ink);
+    color: var(--panel);
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  @media (max-width: 820px) {
+    .layout { grid-template-columns: 1fr; }
+    aside {
+      position: fixed;
+      inset: 0 30% 0 0;
+      z-index: 15;
+      transform: translateX(-100%);
+      transition: transform 0.2s;
+      box-shadow: 4px 0 16px rgba(0,0,0,0.08);
+    }
+    aside.open { transform: translateX(0); }
+    main { padding: 64px 22px 80px; }
+    h1 { font-size: 28px; }
+    .menu-btn { display: block; }
+  }
+</style>
+</head>
+<body>
+<button class="menu-btn" id="menuBtn">Menu</button>
+<div class="layout">
+  <aside id="sidebar">
+    <p class="brand">Human 101</p>
+    <p class="brand-sub">Staying a person when the AI can do everything.</p>
+    <nav id="nav"></nav>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<script>
+const SKILLS = [
+  {
+    domain: "Talking with AI",
+    skills: [
+      {
+        id: "starting",
+        name: "Start when you don't know where to start",
+        why: "Most people freeze because they think the first prompt has to be perfect. It doesn't. The first prompt is just you saying hi to your own thoughts.",
+        prompt: "I want to think out loud about something but I'm not sure what I'm trying to figure out yet. Here's the rough situation: [describe in messy plain words]. Ask me one question at a time to help me get clearer.",
+        convo: [
+          { role: "you", text: "I want to think out loud. I feel stuck about whether I should switch jobs. I don't know what I'm trying to figure out yet. Ask me one question at a time." },
+          { role: "ai", text: "Sure. First question: when you imagine staying at your current job for two more years, what's the first feeling that shows up?" },
+          { role: "you", text: "Boredom. And a little embarrassment, like I should've left already." },
+          { role: "ai", text: "Got it. Next: is the boredom about the work itself, the people, or the version of you that this job lets you be?" },
+          { role: "you", text: "...the version of me. I think that's actually the thing." }
+        ],
+        takeaway: "You don't have to know your question. You just have to start a conversation that helps you find it."
+      },
+      {
+        id: "telling-idea",
+        name: "Tell AI your half-formed idea",
+        why: "If you wait until your idea is polished, AI just rubber-stamps it. The useful part is when it's still a mess.",
+        prompt: "I have a rough idea and I want your help making it sharper, not nicer. Here it is in plain words: [your idea, even if it sounds dumb]. Tell me back what you actually heard, then ask me three questions where my idea is most vague.",
+        convo: [
+          { role: "you", text: "Rough idea: a podcast where two people who used to be friends but aren't anymore explain what happened. Tell me back what you heard, then ask three questions where I'm vague." },
+          { role: "ai", text: "What I heard: an interview show structured around former friendships, where the value is the post-mortem, not the friendship. Three vague spots: 1) Are both former friends in the same room or interviewed separately? 2) Is the tone closer to therapy, journalism, or comedy? 3) Why would the guests agree to do this — what's in it for them?" },
+          { role: "you", text: "Same room. Closer to therapy. And honestly I have no idea why they'd agree. That third one is the actual problem, isn't it." },
+          { role: "ai", text: "Yeah. Most ideas die at the 'why would anyone participate' question. Want to spend a turn just on that?" }
+        ],
+        takeaway: "The job of the prompt is to expose the soft spots in your thinking, not to hide them."
+      },
+      {
+        id: "what-went-wrong",
+        name: "Tell AI what went wrong",
+        why: "When AI gives you something off, the impulse is to start over. Don't. The fix is almost always smaller than you think.",
+        prompt: "What you gave me missed the mark. Specifically: [the one thing that was off]. Don't redo the whole thing. Just adjust that part and explain what you changed.",
+        convo: [
+          { role: "you", text: "Write a short message to my landlord asking about the broken heater." },
+          { role: "ai", text: "Hi [Landlord Name], I hope this message finds you well. I am writing to inform you that the heating system in my unit has ceased functioning properly..." },
+          { role: "you", text: "Missed the mark — way too formal, sounds like a lawyer. Don't redo the whole thing, just make it sound like a normal person texting their landlord." },
+          { role: "ai", text: "Hey, the heater in my place stopped working — any chance you can take a look this week? Let me know. Thanks!\n\n(Changed: dropped the formal opener and the legalese, kept it to one sentence and a thank-you.)" }
+        ],
+        takeaway: "Naming the one thing that's wrong is more useful than starting over. It also teaches you what you actually wanted."
+      },
+      {
+        id: "stop-off-track",
+        name: "Stop AI when it's going off-track",
+        why: "AI will happily generate three pages of confident wrong direction. You're allowed to interrupt it.",
+        prompt: "Stop. We're going the wrong way. The thing I actually need is [what you actually need], not [what it's been doing]. Reset and try again.",
+        convo: [
+          { role: "you", text: "Help me plan a birthday party for my mom." },
+          { role: "ai", text: "Great! Let's start with the venue. Here are 12 venue options ranked by capacity, then we'll go into catering, then..." },
+          { role: "you", text: "Stop. Wrong direction. I'm not planning the logistics, I'm trying to figure out a theme that would actually make her feel seen. Reset." },
+          { role: "ai", text: "Got it, fully different question. To help with that — what's something your mom does for herself that nobody else in the family takes seriously?" }
+        ],
+        takeaway: "You are allowed to say 'stop.' AI doesn't have feelings about being interrupted. You're not being rude, you're being useful to yourself."
+      },
+      {
+        id: "good-example",
+        name: "Give one good example",
+        why: "Describing the vibe in adjectives almost never works. One concrete example is worth six adjectives.",
+        prompt: "Here's an example of the kind of thing I want: [paste a real example, even imperfect]. Now do something in that spirit for [my situation], and tell me which parts of the example you carried over.",
+        convo: [
+          { role: "you", text: "Help me write an apology text to my sister. Example of the tone I want: 'hey I was a jerk yesterday and I've been thinking about it. wanted to say sorry, no excuses.' Now write one for me — context is I cancelled on her birthday last minute." },
+          { role: "ai", text: "Hey — I've been thinking about bailing on your birthday and I feel bad about it. No good excuse, I just made a bad call. I'm sorry.\n\n(Carried over from your example: short, owns it, no excuses, one sentence of self-awareness, no big promises about doing better.)" }
+        ],
+        takeaway: "Adjectives are fuzzy. One example is a fingerprint."
+      }
+    ]
+  },
+
+  {
+    domain: "Thinking clearly",
+    skills: [
+      {
+        id: "what-you-want",
+        name: "Know what you actually want",
+        why: "Most stuck moments aren't about not knowing the answer. They're about not knowing the question. AI can help, if you let it pull on the thread.",
+        prompt: "I keep saying I want [thing], but I'm not sure that's actually what I want. Ask me what I'd lose if I got it. Then ask me what I'd lose if I didn't.",
+        convo: [
+          { role: "you", text: "I keep saying I want to move to a bigger city. Ask me what I'd lose if I got it, then what I'd lose if I didn't." },
+          { role: "ai", text: "If you got it — a bigger city — what would you lose?" },
+          { role: "you", text: "The Sunday morning walks where I know everyone. The cheap rent. The feeling that I'm 'from' somewhere." },
+          { role: "ai", text: "And if you didn't move — if you stayed — what would you lose?" },
+          { role: "you", text: "...the version of myself I keep imagining." },
+          { role: "ai", text: "Both lists are real. Notice the second one is shorter but heavier. That's usually a signal." }
+        ],
+        takeaway: "What you want isn't a fact you discover. It's something you uncover by naming what you'd grieve either way."
+      },
+      {
+        id: "vague-problem",
+        name: "Break a vague problem down",
+        why: "'I don't have time' is not a problem you can solve. 'I spend 90 minutes a day on email I don't need to send' is.",
+        prompt: "I have a vague problem: [vague thing]. Help me turn it into three specific, smaller problems, each of which I could actually do something about.",
+        convo: [
+          { role: "you", text: "Vague problem: my apartment always feels chaotic. Break it into three specific smaller problems." },
+          { role: "ai", text: "Possible breakdown:\n1. Surfaces: the kitchen counter and entry table accumulate stuff, and you don't have a home for any of it.\n2. Visual noise: too many things visible at once — there's no 'off state' for the room.\n3. End-of-day reset: there's no 5-minute ritual to put things back, so chaos compounds.\n\nWhich of these feels most like the actual problem?" },
+          { role: "you", text: "The third one. It's not the stuff, it's that I don't reset." }
+        ],
+        takeaway: "Vague problems feel huge because they're unsolvable by definition. The first move is always: cut it into pieces small enough to do something with."
+      },
+      {
+        id: "name-assumption",
+        name: "Name your assumption",
+        why: "Most bad decisions come from one assumption nobody said out loud. Saying it out loud often kills the decision.",
+        prompt: "I'm about to do [thing] because I'm assuming [assumption]. What would have to be true for that assumption to be wrong? And what would I notice first if it were?",
+        convo: [
+          { role: "you", text: "I'm about to quit my job because I'm assuming I'd find something better within two months. What would have to be true for that to be wrong?" },
+          { role: "ai", text: "For the two-month assumption to be wrong, one or more of these would need to hold:\n- The job market in your field has slowed since you last looked.\n- Your most relevant skills are more company-specific than transferable.\n- Hiring cycles in your field run longer than two months by default.\n- Your savings runway is shorter than the actual median search time.\n\nWhat would you notice first if it were wrong? Probably: silence after the first wave of applications, around week 3–4." }
+        ],
+        takeaway: "An unspoken assumption is a load-bearing wall you didn't know was there. Naming it lets you check it before you knock it down."
+      },
+      {
+        id: "five-whys",
+        name: "Ask 'why' five times",
+        why: "The first reason you give is almost never the real one. The fifth one usually is.",
+        prompt: "I want to do [thing]. Ask me 'why' five times in a row, each time using my last answer. Don't soften it.",
+        convo: [
+          { role: "you", text: "I want to start a side project. Ask me why five times." },
+          { role: "ai", text: "Why?" },
+          { role: "you", text: "Because I'm bored at work." },
+          { role: "ai", text: "Why are you bored at work?" },
+          { role: "you", text: "Because I already know how to do everything they ask me." },
+          { role: "ai", text: "Why is doing things you already know how to do bad?" },
+          { role: "you", text: "Because I don't feel like I'm becoming anyone new." },
+          { role: "ai", text: "Why does becoming someone new matter to you?" },
+          { role: "you", text: "...I think I'm scared of looking back and seeing the same person." },
+          { role: "ai", text: "So the side project isn't about boredom. It's about not wanting to feel preserved-in-amber. Worth knowing before picking what the project is." }
+        ],
+        takeaway: "Five whys won't always go this deep. But when it does, you get to design the answer for the real reason instead of the surface one."
+      }
+    ]
+  },
+
+  {
+    domain: "Working together",
+    skills: [
+      {
+        id: "context",
+        name: "Share the right amount of context",
+        why: "Too little context, you get a generic answer. Too much, you get an answer to the wrong question. Most people undershoot.",
+        prompt: "Before I ask my question, here's context you'd need to give a non-generic answer: [3–5 sentences about your situation, constraints, and what you've already tried]. Now my question is: [question].",
+        convo: [
+          { role: "you", text: "Context: I'm a manager of 4, all senior, all remote, in 3 timezones. We had two great years and a mediocre last quarter. People are quietly checking out — no one's quitting, but no one's pushing either. I've already tried 1:1s focused on career growth, didn't move the needle.\n\nQuestion: what would you actually try next?" },
+          { role: "ai", text: "Given the context — senior, remote, post-good-run, growth-1:1s already tried — the most undertried move is usually changing what 'we' work on, not how individuals feel. Pick one project that's actually new to all of you (not a stretch version of existing work) and have the team scope it together. The mediocre quarter sounds like the team is in maintenance mode, and growth conversations don't fix maintenance mode — new shared problems do." },
+          { role: "you", text: "That's a real answer, not a 'have you tried offsites' answer. Thank you." }
+        ],
+        takeaway: "Context is the difference between getting advice for your situation and getting advice for everyone's situation."
+      },
+      {
+        id: "i-dont-know",
+        name: "Say 'I don't know yet'",
+        why: "Pretending to know more than you do makes AI answer the wrong question. Saying you're unsure unlocks a better conversation.",
+        prompt: "I don't actually know [the thing I'm pretending to know]. Don't help me decide yet — first, help me figure out what I'd need to learn to even have an opinion.",
+        convo: [
+          { role: "you", text: "I don't actually know if I want kids or just feel like I should want them. Don't help me decide. Help me figure out what I'd need to learn to have a real opinion." },
+          { role: "ai", text: "A few directions of inquiry, no decision needed:\n- What does a regular Tuesday look like for parents in your specific life setup (work, partner, location, support)? You probably have a movie version, not a Tuesday version.\n- Which of your current desires would actually conflict with kids, vs. which would just shift?\n- Whose voice is loudest in your head when you imagine wanting them — yours, or someone else's?\n\nNone of these answer the question. They tell you which questions you haven't actually sat with." }
+        ],
+        takeaway: "'I don't know' isn't a confession. It's a precondition for an honest conversation."
+      },
+      {
+        id: "disagree",
+        name: "Disagree with the AI",
+        why: "AI sounds confident even when it's wrong. Pushing back makes the answer better — and trains you to stop outsourcing your judgment.",
+        prompt: "I don't think you're right about [the part]. Here's why: [your reasoning]. Either tell me where my reasoning breaks, or update your answer.",
+        convo: [
+          { role: "you", text: "I don't think you're right that I should send the email today. My reasoning: I'm angry, the recipient hasn't done anything irreversible yet, and 'sleep on it' has saved me before. Either show me where my reasoning breaks, or update." },
+          { role: "ai", text: "Your reasoning holds. The case for today was just 'momentum,' which is a bad reason when paired with anger. Updated take: draft it now, schedule it for tomorrow morning, re-read before sending." }
+        ],
+        takeaway: "AI isn't the judge. It's a sparring partner. The point of sparring is to throw a punch."
+      },
+      {
+        id: "ask-disagree",
+        name: "Ask the AI to disagree with you",
+        why: "AI defaults to agreeable. Ask explicitly for the strongest counter and you get information you wouldn't have generated yourself.",
+        prompt: "I think [your view]. Don't agree with me. Give me the strongest version of the opposite case, the one I'd find hardest to dismiss.",
+        convo: [
+          { role: "you", text: "I think the smart move is to take the higher-paying job. Don't agree. Give me the strongest case against." },
+          { role: "ai", text: "Strongest case against: the higher-paying job pays more because the work is closer to a commodity — the market values it, but it doesn't compound your distinctiveness. In five years you'll be more replaceable, not less. The 'lower-paying' job is a bet on becoming someone whose work the market hasn't priced yet. The pay gap is real. The career gap, after compounding, may be bigger in the other direction." },
+          { role: "you", text: "Ow. Okay. That actually moved me." }
+        ],
+        takeaway: "If you only ask for support, you'll only get support. Ask for the punch and you find out where your stance is actually weak."
+      }
+    ]
+  },
+
+  {
+    domain: "Making decisions",
+    skills: [
+      {
+        id: "compare",
+        name: "Compare two options honestly",
+        why: "Most pro/con lists are theatre — the conclusion is decided before the list. Done right, the list surfaces what you didn't want to admit.",
+        prompt: "I'm choosing between [A] and [B]. Don't pick yet. List the three things each option is best at — but only the things that actually matter to me, which are [your real priorities].",
+        convo: [
+          { role: "you", text: "Choosing between staying in my current city or moving back home for a year. My real priorities: time with aging parents, my work momentum, and not feeling 19 again. Three things each option is best at." },
+          { role: "ai", text: "Stay in current city — best at:\n1. Protecting work momentum (continuity, network, schedule).\n2. Maintaining your adult identity day-to-day.\n3. Lower friction — no transition cost.\n\nMove home for a year — best at:\n1. Time with parents that you literally cannot get back later.\n2. A natural break in life rhythm that resets what you take for granted.\n3. Showing your future self you took the harder path when it counted.\n\nNotice the 'home' list has more things you can't replay later." }
+        ],
+        takeaway: "A good comparison shows you what's irreversible. That's often the deciding factor."
+      },
+      {
+        id: "tradeoffs",
+        name: "Say the tradeoffs out loud",
+        why: "If a decision feels free, you haven't found the cost yet. Naming the cost is the decision.",
+        prompt: "I'm picking [option]. What am I giving up by choosing this? List the three biggest things, including the ones I might be hiding from myself.",
+        convo: [
+          { role: "you", text: "I'm picking the smaller, riskier startup over the big-tech offer. What am I giving up?" },
+          { role: "ai", text: "Three things you're giving up, including the ones you might be hiding from:\n1. Optionality — the big-tech name on your resume is a free option for the next decade. You're spending it.\n2. A version of stability that lets the rest of your life be unstable (move, have a kid, etc.) without compounding stress.\n3. The quiet satisfaction of 'making it' by external metrics. You'll claim you don't care about this. You probably will, sometimes." },
+          { role: "you", text: "The third one is the one I was hiding from. Yeah." }
+        ],
+        takeaway: "If you can't name what you're giving up, you haven't actually decided. You've just picked the option that feels best in this 30 seconds."
+      },
+      {
+        id: "recommend",
+        name: "Ask for a recommendation, not a list",
+        why: "AI defaults to lists because lists are safe. Ask for one answer and you force commitment — both yours and the AI's.",
+        prompt: "Don't give me a list. Pick one. Tell me which option you'd choose and why, in three sentences. I'll decide if I agree.",
+        convo: [
+          { role: "you", text: "I have three weeks off. I could travel, I could finally finish my book draft, or I could rest. Don't list — pick one." },
+          { role: "ai", text: "Rest. You phrased the other two as accomplishments and the third as a need, which means you've already told me what you're actually short on. Three weeks of rest is unrecoverable later in a way that the trip and the draft aren't." }
+        ],
+        takeaway: "A list lets you keep deferring. A recommendation forces a yes or no. Even disagreeing with it teaches you something."
+      },
+      {
+        id: "stress-test",
+        name: "Stress-test your plan",
+        why: "Plans look great in your head and bad in reality. Run them through one round of 'what could break this' before reality does it for you.",
+        prompt: "Here's my plan: [plan]. What are the three most likely ways this falls apart in the first month, and what's the cheapest thing I could do now to make each one less bad?",
+        convo: [
+          { role: "you", text: "Plan: I'll write 500 words a day on my book before work for 90 days. Three most likely ways this falls apart in month one, plus a cheap pre-emptive move for each." },
+          { role: "ai", text: "1. Falls apart from missing one day and feeling 'off the wagon.' Cheap move now: define what counts as a streak — e.g., 5 of 7 days — so one miss doesn't cascade.\n\n2. Falls apart from 500 being too brittle on hard days. Cheap move: define a floor (50 words) that still counts. The point is showing up.\n\n3. Falls apart because mornings get hijacked by something legitimate (sick kid, late night). Cheap move: pre-decide the backup window (e.g., 9pm) so you're not deciding under stress." }
+        ],
+        takeaway: "Pre-mortems beat post-mortems. The fixes are almost always tiny if you make them before the thing breaks."
+      }
+    ]
+  },
+
+  {
+    domain: "Learning something new",
+    skills: [
+      {
+        id: "explain-beginner",
+        name: "Ask for a beginner explanation",
+        why: "Most explanations assume things you don't know. Ask explicitly to start lower than you think you need.",
+        prompt: "Explain [thing] like I've never heard the word before. Don't use any jargon without defining it on the same line. Stop after two paragraphs and ask me what's still fuzzy.",
+        convo: [
+          { role: "you", text: "Explain 'compound interest' like I've never heard the word. No jargon. Stop after two paragraphs." },
+          { role: "ai", text: "Imagine you put $100 in a jar that grows by 10% a year. After year one, you have $110. The new $10 is interest — money the jar gave you for letting it sit there.\n\nNow here's the trick. In year two, the jar grows 10% on the whole $110, not the original $100. So you get $11 instead of $10. The interest itself starts earning interest. That's 'compound' — each year's growth piles on top of the previous years', so the jar grows faster the longer you leave it.\n\nWhat's still fuzzy?" },
+          { role: "you", text: "Why does anyone care if it's only $1 more in year two?" },
+          { role: "ai", text: "Fair. The honest answer: in year two it's nothing. In year 30 it's most of the money. That's the whole reason people care — small effects that compound become huge over long periods." }
+        ],
+        takeaway: "If the explanation makes you feel dumb, ask for a simpler one. The shame is in nodding along, not in admitting."
+      },
+      {
+        id: "analogy",
+        name: "Ask for an analogy",
+        why: "Your brain stores new ideas by attaching them to old ones. A good analogy is faster than a hundred definitions.",
+        prompt: "Give me an analogy for [thing] using something from everyday life. Then tell me where the analogy breaks down — that's where the idea actually lives.",
+        convo: [
+          { role: "you", text: "Give me an analogy for how a neural network learns. Then tell me where it breaks." },
+          { role: "ai", text: "Analogy: imagine teaching a kid to recognize dogs by showing them thousands of photos and saying 'dog' or 'not dog.' Over time the kid notices patterns — fur, four legs, snout — without you ever explicitly listing the rules. A neural network does that, except the 'kid' is millions of tiny knobs that get nudged a little every time it's wrong.\n\nWhere it breaks: the kid eventually understands what a dog is. The network never does. It just gets very good at separating dog-shaped pixel patterns from non-dog-shaped ones. That gap — between recognizing and understanding — is most of why current AI feels both impressive and weirdly hollow." }
+        ],
+        takeaway: "A good analogy gives you the shape. Asking where it breaks gives you the actual idea."
+      },
+      {
+        id: "quiz",
+        name: "Quiz yourself",
+        why: "Reading is not learning. You don't know what you know until something asks you to produce it.",
+        prompt: "I just learned [topic]. Quiz me with 5 short questions, one at a time. After each answer, tell me what I missed — don't just say 'correct.'",
+        convo: [
+          { role: "you", text: "I just read about how the kidneys work. Quiz me with 5 short questions, one at a time." },
+          { role: "ai", text: "Question 1: in one sentence, what does the kidney do?" },
+          { role: "you", text: "Filters waste from blood and makes pee." },
+          { role: "ai", text: "Right on filtering, missing two things: the kidney also regulates blood pressure (via renin) and balances electrolytes — it's not just a strainer, it's a chemistry lab.\n\nQuestion 2: roughly how much blood passes through both kidneys per day?" }
+        ],
+        takeaway: "Quizzing finds the gap between 'this made sense when I read it' and 'I actually have it.' Those are very different states."
+      },
+      {
+        id: "unknown-unknowns",
+        name: "Find what you don't know you don't know",
+        why: "The dangerous gaps are the ones you can't name. AI can scan the territory you haven't visited yet.",
+        prompt: "I know roughly [these things] about [topic]. What are three important things in this area that beginners almost never realize they're missing?",
+        convo: [
+          { role: "you", text: "I know roughly: how to write a simple SQL query, joins, group by, basic indexes. What am I almost certainly missing?" },
+          { role: "ai", text: "Three blind spots common at your level:\n1. Query plans. You can read SQL but probably can't read how the database is going to execute it. EXPLAIN is the next mile.\n2. Transaction isolation. 'Just works' until it doesn't — concurrent writes will eventually surprise you in a way you can't debug without this.\n3. The cost of the wrong index. People learn that indexes speed up reads. Fewer learn that the wrong index slows down writes and lies on small tables. Indexes are a tradeoff, not a switch." }
+        ],
+        takeaway: "What you don't know is invisible by definition. Asking 'what would a more experienced person say I'm missing' is one of the few ways to make it visible."
+      }
+    ]
+  },
+
+  {
+    domain: "Creating",
+    skills: [
+      {
+        id: "brainstorm",
+        name: "Brainstorm without losing your taste",
+        why: "AI will generate 50 ideas in a second. The skill is not generating — it's noticing which ones make you lean forward.",
+        prompt: "Give me 10 ideas for [thing], including 3 deliberately weird ones. Don't explain them. Just the list — I'll tell you which two I want to think more about.",
+        convo: [
+          { role: "you", text: "10 ideas for what to do for my dad's 70th birthday. Include 3 weird ones. No explanations." },
+          { role: "ai", text: "1. Family dinner at his favorite restaurant.\n2. Surprise weekend trip to where he grew up.\n3. A book of letters from old friends.\n4. Hire a private chef for a small home dinner.\n5. Photo project: recreate his favorite photo from each decade.\n6. A day of 'his hobbies' — fishing, his music, his foods.\n7. Hire a local musician to play one specific song he loves at home.\n8. Weird: a roast where every speaker has to praise him by accusing him of a virtue.\n9. Weird: pay for a stranger to learn his trade and dedicate their first job to him.\n10. Weird: a silent dinner — everyone present, no one talks for the first 10 minutes." },
+          { role: "you", text: "5 and 8 made me lean forward." }
+        ],
+        takeaway: "Your job in brainstorming is not to come up with ideas. It's to notice which ones make you lean forward. AI handles the volume, you handle the taste."
+      },
+      {
+        id: "refine",
+        name: "Refine a draft without flattening it",
+        why: "AI will gladly polish your draft into something perfectly fine and recognizably nobody. Tell it what to keep.",
+        prompt: "Here's my draft: [draft]. Tighten it but keep these specific things: [the 2–3 phrases or rhythms that are mine]. Tell me what you cut and why.",
+        convo: [
+          { role: "you", text: "Draft: 'I quit my job today. I don't have a plan, which is the most honest thing about it. The job wasn't bad. I was just done being recognizable in it.'\n\nTighten but keep 'most honest thing about it' and 'recognizable in it.' Tell me what you cut." },
+          { role: "ai", text: "I quit today. No plan, which is the most honest thing about it. The job wasn't bad — I was just done being recognizable in it.\n\nCut: 'my job' the second time (already implied), and the period between 'plan' and 'which' (em-dash keeps the rhythm tighter). Kept your two phrases verbatim because they're the voice of the piece." }
+        ],
+        takeaway: "Polish without specification is a flattening machine. The specification is the work."
+      },
+      {
+        id: "honest-feedback",
+        name: "Ask for honest feedback",
+        why: "AI is conflict-averse by default. You have to give it explicit permission to be useful.",
+        prompt: "Read [thing]. I don't want encouragement. Tell me the one thing that's weakest, in one sentence, the way a friend who didn't want to embarrass me would say it at a kitchen table.",
+        convo: [
+          { role: "you", text: "Read this opening to my essay: 'In a world where AI can do everything, what does it mean to be human? This is the question of our generation.' Don't encourage. One weakest sentence. Kitchen table tone." },
+          { role: "ai", text: "It opens like a TED talk written by someone who hasn't decided what they actually think — start with the moment you noticed the question instead of announcing it." }
+        ],
+        takeaway: "Default AI feedback is decaf. Ask for the version a friend would say if they trusted you to handle it."
+      },
+      {
+        id: "done-enough",
+        name: "Know when something is done enough",
+        why: "Perfectionism dressed up as 'one more pass' is one of the main ways AI helps people never ship.",
+        prompt: "Here's [thing]. Don't suggest improvements. Tell me whether it's done enough to ship for [the actual purpose], and what would have to be true for it not to be.",
+        convo: [
+          { role: "you", text: "Here's my freelance pitch email. Don't suggest improvements. Is it done enough to send to a real prospect, yes or no, and what would have to be true for it to not be?" },
+          { role: "ai", text: "Yes, send. It's specific, it names what you'd do for them in concrete terms, and it asks for one clear next step. It would not be done enough if you were pitching at someone way more senior than you have proof for, where 'I admire your work' would read as fan mail. That's not the case here." }
+        ],
+        takeaway: "Most things are done one or two passes before you stop touching them. Asking 'is this done enough for its actual purpose' is a faster question than 'is this perfect.'"
+      }
+    ]
+  },
+
+  {
+    domain: "Checking AI's work",
+    skills: [
+      {
+        id: "confident-wrong",
+        name: "Spot confident-but-wrong answers",
+        why: "AI is most dangerous when it's wrong in the same tone it uses when it's right. The signal you can use: specificity that's a little too clean.",
+        prompt: "You just said [the specific claim]. Before I trust it, tell me: how would I verify this in 30 seconds, and what's the most likely way you're wrong?",
+        convo: [
+          { role: "you", text: "You just said the average human blinks about 15 times per minute. How would I verify this in 30 seconds, and what's the most likely way you're wrong?" },
+          { role: "ai", text: "How to verify in 30 seconds: search 'human blink rate per minute' and look for sources citing actual studies (e.g., a journal name, not a listicle). Likely ways I'm wrong: I might be quoting a commonly-repeated number that traces back to a small or dated study; the actual number varies a lot by activity (reading drops it to 3–5); 'average' is doing more work than it sounds like." }
+        ],
+        takeaway: "Confident-and-specific isn't the same as correct. Asking 'how would I check' in 30 seconds is cheaper than getting it wrong."
+      },
+      {
+        id: "how-do-you-know",
+        name: "Ask 'how do you know this?'",
+        why: "Forcing AI to surface the reasoning behind a claim usually exposes whether the claim is solid or vibes.",
+        prompt: "When you said [claim], where does that come from? Distinguish between things you're inferring vs. things you'd expect to find in actual sources.",
+        convo: [
+          { role: "you", text: "You said this medication can interact with grapefruit. Where does that come from? Inferred or in actual sources?" },
+          { role: "ai", text: "This one I'd expect to find in actual sources — the mechanism (CYP3A4 inhibition by furanocoumarins in grapefruit) is well-documented in pharmacology references and is on the FDA's list of common food-drug interactions. That said, you should always check the specific medication's label or ask your pharmacist, because the strength of the interaction varies a lot drug by drug." }
+        ],
+        takeaway: "Sources beat eloquence. If you can't tell whether a claim is grounded or generated, ask."
+      },
+      {
+        id: "cross-check",
+        name: "Cross-check with one source",
+        why: "You don't need to verify everything. You need to verify the one thing your decision actually rests on.",
+        prompt: "Of everything you just told me, what's the single most load-bearing claim — the one that, if it were wrong, would change my decision? I'll go check that one.",
+        convo: [
+          { role: "you", text: "Of all that advice on the new lease, what's the single load-bearing claim — the one that, if wrong, changes the decision?" },
+          { role: "ai", text: "The load-bearing claim is that in your state, landlords cannot withhold the security deposit for normal wear-and-tear. If that's not true in your specific jurisdiction, the rest of my advice is much weaker. Worth checking your state's landlord-tenant law on that one specifically before you sign." }
+        ],
+        takeaway: "You can't verify everything. You can almost always identify the one thing the decision rests on, and verify just that."
+      },
+      {
+        id: "trust-gut",
+        name: "Trust your gut over the answer",
+        why: "If a confident answer makes you uneasy, that's data, not noise. Sit with it before overriding it.",
+        prompt: "You gave me an answer. It's logical, but something about it feels off to me. I can't fully name why. Help me articulate what my gut might be reacting to — but don't talk me out of it.",
+        convo: [
+          { role: "you", text: "You said I should accept the offer. It's logical but something feels off and I can't name it. Help me articulate what my gut might be reacting to." },
+          { role: "ai", text: "Possible things your gut might be tracking that the logical case isn't:\n- The interviewer made one comment that didn't land, and you've been reframing it ever since.\n- The role description doesn't quite match what you'd actually be doing day one — and you noticed without flagging it.\n- It's a great offer for the version of you you used to be, not the one you're becoming.\n\nNone of these are reasons not to take it. But the off feeling is information. Don't let me argue you out of it before you've named it." }
+        ],
+        takeaway: "AI is a great spreadsheet. Your gut is a pattern-matcher trained on your whole life. When they disagree, sit with it, don't auto-resolve."
+      }
+    ]
+  },
+
+  {
+    domain: "Being a person",
+    skills: [
+      {
+        id: "discomfort",
+        name: "Sit with discomfort instead of asking AI",
+        why: "Some feelings are not problems to solve. They're things to feel. AI will eagerly turn every emotion into a project — that's a trap.",
+        prompt: "I'm tempted to ask you to fix or reframe what I'm feeling, which is [feeling]. Don't. Just confirm it's a normal thing to feel given [situation], and let me sit with it for a minute.",
+        convo: [
+          { role: "you", text: "I'm tempted to ask you to fix the dread I feel about my dad getting older. Don't reframe. Just confirm it's normal and let me sit with it." },
+          { role: "ai", text: "Yeah. That dread is normal and accurate — your dad really is getting older, and you're noticing something true. Sit with it as long as you need to. I'll be here when you want to talk about something else, or this." }
+        ],
+        takeaway: "Not every feeling needs an action item. Some feelings just need a witness. AI can be that, if you don't ask it to be more."
+      },
+      {
+        id: "articulate",
+        name: "Articulate what's bothering you",
+        why: "Naming a feeling is half the work of resolving it. AI is good at giving you words to try on.",
+        prompt: "Something is bothering me and I can't name it. The vague version is: [vague feeling]. Offer me three possible names for what it might actually be — I'll tell you which one fits.",
+        convo: [
+          { role: "you", text: "Something's bothering me about my friendship with M and I can't name it. Vague: I always feel a little worse after we talk lately. Three possible names." },
+          { role: "ai", text: "Three guesses, just as candidates:\n1. Envy — something in their life is going well in a way that's surfacing comparison you don't usually feel.\n2. One-sidedness — the conversations have started to feel like you're a service they use rather than a friend they're with.\n3. Drift — neither of you has done anything wrong, and you're noticing that you've already grown past this version of the friendship.\n\nWhich one made you flinch?" },
+          { role: "you", text: "The second one." }
+        ],
+        takeaway: "If you can name it, you can do something about it. If you can't, you're stuck. AI is a thesaurus for feelings."
+      },
+      {
+        id: "close-chat",
+        name: "Know when to close the chat",
+        why: "Talking to AI feels productive even when it isn't. Some moments need air, walking, or another human — not another turn.",
+        prompt: "Honest question: based on what we've talked about in this conversation, is there anything left I should ask you, or is this the kind of moment where I should close this and go for a walk?",
+        convo: [
+          { role: "you", text: "Honest question — is there more I should ask, or should I just close this and go for a walk?" },
+          { role: "ai", text: "Close this and go for a walk. We've been circling the same point for the last few turns, which usually means you already know the answer and are looking for permission. Consider this permission." }
+        ],
+        takeaway: "AI will keep talking forever. The skill is knowing when 'one more prompt' is procrastination wearing a costume."
+      },
+      {
+        id: "talk-to-humans",
+        name: "Talk to a human instead",
+        why: "AI is private, available, and never tired — which makes it dangerously easy to use it for the things only people can give you.",
+        prompt: "I've been using you for [need — comfort, encouragement, being known]. Help me draft what I'd say to an actual person about this — partner, friend, sibling — that would feel doable to send.",
+        convo: [
+          { role: "you", text: "I've been using you to feel less lonely lately. Help me draft a text to my friend J that would feel doable to send. Nothing big, nothing dramatic." },
+          { role: "ai", text: "Hey — no agenda, just realized it's been a while. I've been a little in my head this month. Coffee or a walk this week if you're around?\n\n(Designed to be small enough to send: no announcement of feelings, no implied weight, leaves the door open.)" }
+        ],
+        takeaway: "AI can model what a human reply might feel like. It cannot give you the thing where someone you love made time for you. Don't confuse the rehearsal for the performance."
+      }
+    ]
+  }
+];
+
+const nav = document.getElementById("nav");
+const main = document.getElementById("main");
+const sidebar = document.getElementById("sidebar");
+const menuBtn = document.getElementById("menuBtn");
+
+let activeId = null;
+
+function render() {
+  // build nav
+  nav.innerHTML = "";
+  for (const d of SKILLS) {
+    const wrap = document.createElement("div");
+    wrap.className = "domain";
+    const h = document.createElement("h3");
+    h.textContent = d.domain;
+    wrap.appendChild(h);
+    const ul = document.createElement("ul");
+    for (const s of d.skills) {
+      const li = document.createElement("li");
+      li.textContent = s.name;
+      li.dataset.id = s.id;
+      if (s.id === activeId) li.classList.add("active");
+      li.addEventListener("click", () => {
+        activeId = s.id;
+        render();
+        if (window.innerWidth <= 820) sidebar.classList.remove("open");
+        history.replaceState(null, "", "#" + s.id);
+        main.scrollTo({ top: 0, behavior: "instant" });
+        window.scrollTo({ top: 0, behavior: "instant" });
+      });
+      ul.appendChild(li);
+    }
+    wrap.appendChild(ul);
+    nav.appendChild(wrap);
+  }
+  // build main
+  let active = null;
+  let activeDomain = null;
+  for (const d of SKILLS) for (const s of d.skills) {
+    if (s.id === activeId) { active = s; activeDomain = d.domain; }
+  }
+  if (!active) { main.innerHTML = ""; return; }
+
+  main.innerHTML = "";
+  const crumb = document.createElement("p");
+  crumb.className = "crumb";
+  crumb.textContent = activeDomain;
+  main.appendChild(crumb);
+
+  const h1 = document.createElement("h1");
+  h1.textContent = active.name;
+  main.appendChild(h1);
+
+  const why = document.createElement("p");
+  why.className = "why";
+  why.textContent = active.why;
+  main.appendChild(why);
+
+  const promptLabel = document.createElement("p");
+  promptLabel.className = "section-label";
+  promptLabel.textContent = "Try this prompt";
+  main.appendChild(promptLabel);
+
+  const promptBox = document.createElement("div");
+  promptBox.className = "prompt";
+  promptBox.textContent = active.prompt;
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "copy-btn";
+  copyBtn.textContent = "Copy";
+  copyBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(active.prompt).then(() => {
+      copyBtn.textContent = "Copied";
+      copyBtn.classList.add("copied");
+      setTimeout(() => {
+        copyBtn.textContent = "Copy";
+        copyBtn.classList.remove("copied");
+      }, 1400);
+    });
+  });
+  promptBox.appendChild(copyBtn);
+  main.appendChild(promptBox);
+
+  const convoLabel = document.createElement("p");
+  convoLabel.className = "section-label";
+  convoLabel.textContent = "Example conversation";
+  main.appendChild(convoLabel);
+
+  const convo = document.createElement("div");
+  convo.className = "convo";
+  for (const t of active.convo) {
+    const turn = document.createElement("div");
+    turn.className = "turn " + t.role;
+    const role = document.createElement("p");
+    role.className = "role";
+    role.textContent = t.role === "you" ? "You" : "AI";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = t.text;
+    turn.appendChild(role);
+    turn.appendChild(bubble);
+    convo.appendChild(turn);
+  }
+  main.appendChild(convo);
+
+  if (active.takeaway) {
+    const t = document.createElement("div");
+    t.className = "takeaway";
+    t.innerHTML = "<strong>The point:</strong> " + active.takeaway;
+    main.appendChild(t);
+  }
+
+  const footer = document.createElement("footer");
+  footer.innerHTML = 'Human 101 is open source. <a href="https://github.com/zizhao-hu/human-101" target="_blank" rel="noopener">Suggest a skill on GitHub</a>.';
+  main.appendChild(footer);
+}
+
+// initial route from hash
+const hash = location.hash.replace("#", "");
+if (hash) activeId = hash;
+else activeId = SKILLS[0].skills[0].id;
+
+render();
+
+menuBtn.addEventListener("click", () => sidebar.classList.toggle("open"));
+window.addEventListener("hashchange", () => {
+  const h = location.hash.replace("#", "");
+  if (h && h !== activeId) { activeId = h; render(); }
+});
+</script>
+</body>
+</html>
