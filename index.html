@@ -33,7 +33,10 @@
     display: grid;
     grid-template-columns: 280px 1fr;
     min-height: 100vh;
+    transition: grid-template-columns 0.2s ease;
   }
+  .layout.collapsed { grid-template-columns: 64px 1fr; }
+
   /* sidebar */
   aside {
     background: var(--panel);
@@ -43,12 +46,37 @@
     top: 0;
     height: 100vh;
     overflow-y: auto;
+    overflow-x: hidden;
   }
+  .layout.collapsed aside { padding: 14px 8px 60px; }
+
+  .toggle {
+    position: absolute;
+    top: 14px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s;
+  }
+  .toggle:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
+  .layout.collapsed .toggle { right: auto; left: 50%; transform: translateX(-50%); }
+
   aside .brand {
     font-weight: 800;
     font-size: 22px;
     letter-spacing: -0.02em;
     margin: 0 0 4px;
+    padding-right: 32px;
   }
   aside .brand-sub {
     color: var(--ink-soft);
@@ -61,6 +89,13 @@
     margin: 0 0 24px;
     font-style: italic;
   }
+  .layout.collapsed .brand,
+  .layout.collapsed .brand-sub,
+  .layout.collapsed .brand-hint,
+  .layout.collapsed #nav { display: none; }
+
+  /* expanded nav */
+  #nav { display: block; }
   .domain { margin-bottom: 22px; }
   .domain h3 {
     text-transform: uppercase;
@@ -69,6 +104,13 @@
     color: var(--ink-soft);
     margin: 0 0 8px;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .domain h3 .domain-icon {
+    font-size: 14px;
+    line-height: 1;
   }
   .domain ul { list-style: none; padding: 0; margin: 0; }
   .domain li {
@@ -86,6 +128,32 @@
     color: var(--panel);
     font-weight: 600;
   }
+
+  /* collapsed icon rail */
+  #rail { display: none; }
+  .layout.collapsed #rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-top: 56px;
+  }
+  .rail-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.1s, transform 0.1s;
+    user-select: none;
+  }
+  .rail-icon:hover { background: var(--accent-soft); transform: scale(1.05); }
+  .rail-icon.active { background: var(--accent); }
+
   /* main */
   main {
     padding: 56px 64px 120px;
@@ -98,7 +166,11 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
+  .crumb .domain-icon { font-size: 16px; }
   h1 {
     font-size: 36px;
     line-height: 1.15;
@@ -206,7 +278,7 @@
     cursor: pointer;
   }
   @media (max-width: 820px) {
-    .layout { grid-template-columns: 1fr; }
+    .layout, .layout.collapsed { grid-template-columns: 1fr; }
     aside {
       position: fixed;
       inset: 0 30% 0 0;
@@ -214,8 +286,13 @@
       transform: translateX(-100%);
       transition: transform 0.2s;
       box-shadow: 4px 0 16px rgba(0,0,0,0.08);
+      padding: 28px 22px 60px;
     }
     aside.open { transform: translateX(0); }
+    .layout.collapsed aside { padding: 28px 22px 60px; }
+    .layout.collapsed #nav { display: block; }
+    .layout.collapsed #rail { display: none; }
+    .toggle { display: none; }
     main { padding: 64px 22px 80px; }
     h1 { font-size: 28px; }
     .menu-btn { display: block; }
@@ -224,12 +301,14 @@
 </head>
 <body>
 <button class="menu-btn" id="menuBtn">Menu</button>
-<div class="layout">
+<div class="layout" id="layout">
   <aside id="sidebar">
+    <button class="toggle" id="toggleBtn" title="Collapse sidebar" aria-label="Collapse sidebar">‹</button>
     <p class="brand">Human 101</p>
     <p class="brand-sub">Staying a person when the AI can do everything.</p>
     <p class="brand-hint">Pick the background that's closest to you.</p>
     <nav id="nav"></nav>
+    <nav id="rail"></nav>
   </aside>
   <main id="main"></main>
 </div>
@@ -237,7 +316,64 @@
 <script>
 const SKILLS = [
   {
+    domain: "Anyone",
+    icon: "👤",
+    skills: [
+      {
+        id: "sit-with-feeling",
+        name: "Sit with a feeling instead of fixing it",
+        why: "Some feelings aren't problems to solve. They're things to feel. AI will eagerly turn every emotion into a project — that's a trap.",
+        prompt: "I'm tempted to ask you to fix or reframe what I'm feeling, which is [feeling]. Don't. Just confirm it's a normal thing to feel given [situation], and let me sit with it for a minute.",
+        convo: [
+          { role: "you", text: "Tempted to ask you to fix the dread I feel about my dad getting older. Don't reframe. Just confirm it's normal, let me sit with it." },
+          { role: "ai", text: "Yeah. That dread is normal and accurate — your dad really is getting older, and you're noticing something true. Sit with it as long as you need to. I'll be here when you want to talk about something else, or this." }
+        ],
+        takeaway: "Not every feeling needs an action item. Some need a witness. AI can be that, if you don't ask it to be more."
+      },
+      {
+        id: "name-the-feeling",
+        name: "Articulate what's bothering you",
+        why: "Naming a feeling is half the work of resolving it.",
+        prompt: "Something is bothering me and I can't name it. The vague version is: [vague feeling]. Offer me three possible names for what it might actually be — I'll tell you which one fits.",
+        convo: [
+          { role: "you", text: "Something's bothering me about my friendship with M. Vague: I always feel a little worse after we talk lately. Three possible names." },
+          { role: "ai", text: "1. Envy — something in their life is going well in a way that's surfacing comparison you don't usually feel.\n2. One-sidedness — the conversations have started to feel like you're a service they use rather than a friend they're with.\n3. Drift — neither of you has done anything wrong, and you're noticing that you've already grown past this version of the friendship.\n\nWhich one made you flinch?" },
+          { role: "you", text: "The second one." }
+        ],
+        takeaway: "If you can name it, you can do something about it. AI is a thesaurus for feelings."
+      },
+      {
+        id: "two-life-paths",
+        name: "Decide between two life paths",
+        why: "Pro/con lists let you keep avoiding it. Naming what you'd grieve either way is the actual decision.",
+        prompt: "I'm choosing between [path A] and [path B]. Don't list pros and cons. Ask me what I'd grieve if I picked A. Then what I'd grieve if I picked B. Then shut up and let me sit with the answers.",
+        convo: [
+          { role: "you", text: "Choosing between staying in my current city and moving home for a year. Don't list pros and cons. Ask what I'd grieve either way." },
+          { role: "ai", text: "If you stayed, what would you grieve?" },
+          { role: "you", text: "Time with my parents that I literally cannot get back later." },
+          { role: "ai", text: "If you moved home, what would you grieve?" },
+          { role: "you", text: "The version of myself that took years to build here. The momentum." },
+          { role: "ai", text: "Both lists are real. Notice which one names something you can't replay later." }
+        ],
+        takeaway: "What you want isn't a fact you discover. It's something you uncover by naming what you'd grieve either way."
+      },
+      {
+        id: "close-the-chat",
+        name: "Know when to close the chat",
+        why: "Talking to AI feels productive even when it isn't. Some moments need air, walking, or another human — not another turn.",
+        prompt: "Honest question: based on what we've talked about in this conversation, is there anything left I should ask you, or is this the kind of moment where I should close this and go for a walk?",
+        convo: [
+          { role: "you", text: "Honest question — is there more I should ask, or should I close this and go for a walk?" },
+          { role: "ai", text: "Close this and go for a walk. We've been circling the same point for the last few turns, which usually means you already know the answer and are looking for permission. Consider this permission." }
+        ],
+        takeaway: "AI will keep talking forever. The skill is knowing when 'one more prompt' is procrastination wearing a costume."
+      }
+    ]
+  },
+
+  {
     domain: "Students",
+    icon: "🎓",
     skills: [
       {
         id: "right-level",
@@ -293,6 +429,7 @@ const SKILLS = [
 
   {
     domain: "Job seekers",
+    icon: "💼",
     skills: [
       {
         id: "tailor-resume",
@@ -349,6 +486,7 @@ const SKILLS = [
 
   {
     domain: "Writers & creatives",
+    icon: "✍️",
     skills: [
       {
         id: "real-opening",
@@ -402,6 +540,7 @@ const SKILLS = [
 
   {
     domain: "Engineers",
+    icon: "💻",
     skills: [
       {
         id: "debug-together",
@@ -454,6 +593,7 @@ const SKILLS = [
 
   {
     domain: "Managers",
+    icon: "👥",
     skills: [
       {
         id: "hard-1on1",
@@ -508,6 +648,7 @@ const SKILLS = [
 
   {
     domain: "Researchers",
+    icon: "🔬",
     skills: [
       {
         id: "fuzzy-hypothesis",
@@ -558,6 +699,7 @@ const SKILLS = [
 
   {
     domain: "Parents",
+    icon: "👨‍👩‍👧",
     skills: [
       {
         id: "hard-kid-question",
@@ -608,6 +750,7 @@ const SKILLS = [
 
   {
     domain: "Founders",
+    icon: "🚀",
     skills: [
       {
         id: "stress-test-pitch",
@@ -654,79 +797,38 @@ const SKILLS = [
         takeaway: "Selling the upside is easy. Naming the cost is what makes the right people trust you and the wrong people leave. Both outcomes are wins."
       }
     ]
-  },
-
-  {
-    domain: "Anyone",
-    skills: [
-      {
-        id: "sit-with-feeling",
-        name: "Sit with a feeling instead of fixing it",
-        why: "Some feelings aren't problems to solve. They're things to feel. AI will eagerly turn every emotion into a project — that's a trap.",
-        prompt: "I'm tempted to ask you to fix or reframe what I'm feeling, which is [feeling]. Don't. Just confirm it's a normal thing to feel given [situation], and let me sit with it for a minute.",
-        convo: [
-          { role: "you", text: "Tempted to ask you to fix the dread I feel about my dad getting older. Don't reframe. Just confirm it's normal, let me sit with it." },
-          { role: "ai", text: "Yeah. That dread is normal and accurate — your dad really is getting older, and you're noticing something true. Sit with it as long as you need to. I'll be here when you want to talk about something else, or this." }
-        ],
-        takeaway: "Not every feeling needs an action item. Some need a witness. AI can be that, if you don't ask it to be more."
-      },
-      {
-        id: "name-the-feeling",
-        name: "Articulate what's bothering you",
-        why: "Naming a feeling is half the work of resolving it.",
-        prompt: "Something is bothering me and I can't name it. The vague version is: [vague feeling]. Offer me three possible names for what it might actually be — I'll tell you which one fits.",
-        convo: [
-          { role: "you", text: "Something's bothering me about my friendship with M. Vague: I always feel a little worse after we talk lately. Three possible names." },
-          { role: "ai", text: "1. Envy — something in their life is going well in a way that's surfacing comparison you don't usually feel.\n2. One-sidedness — the conversations have started to feel like you're a service they use rather than a friend they're with.\n3. Drift — neither of you has done anything wrong, and you're noticing that you've already grown past this version of the friendship.\n\nWhich one made you flinch?" },
-          { role: "you", text: "The second one." }
-        ],
-        takeaway: "If you can name it, you can do something about it. AI is a thesaurus for feelings."
-      },
-      {
-        id: "two-life-paths",
-        name: "Decide between two life paths",
-        why: "Pro/con lists let you keep avoiding it. Naming what you'd grieve either way is the actual decision.",
-        prompt: "I'm choosing between [path A] and [path B]. Don't list pros and cons. Ask me what I'd grieve if I picked A. Then what I'd grieve if I picked B. Then shut up and let me sit with the answers.",
-        convo: [
-          { role: "you", text: "Choosing between staying in my current city and moving home for a year. Don't list pros and cons. Ask what I'd grieve either way." },
-          { role: "ai", text: "If you stayed, what would you grieve?" },
-          { role: "you", text: "Time with my parents that I literally cannot get back later." },
-          { role: "ai", text: "If you moved home, what would you grieve?" },
-          { role: "you", text: "The version of myself that took years to build here. The momentum." },
-          { role: "ai", text: "Both lists are real. Notice which one names something you can't replay later." }
-        ],
-        takeaway: "What you want isn't a fact you discover. It's something you uncover by naming what you'd grieve either way."
-      },
-      {
-        id: "close-the-chat",
-        name: "Know when to close the chat",
-        why: "Talking to AI feels productive even when it isn't. Some moments need air, walking, or another human — not another turn.",
-        prompt: "Honest question: based on what we've talked about in this conversation, is there anything left I should ask you, or is this the kind of moment where I should close this and go for a walk?",
-        convo: [
-          { role: "you", text: "Honest question — is there more I should ask, or should I close this and go for a walk?" },
-          { role: "ai", text: "Close this and go for a walk. We've been circling the same point for the last few turns, which usually means you already know the answer and are looking for permission. Consider this permission." }
-        ],
-        takeaway: "AI will keep talking forever. The skill is knowing when 'one more prompt' is procrastination wearing a costume."
-      }
-    ]
   }
 ];
 
 const nav = document.getElementById("nav");
+const rail = document.getElementById("rail");
 const main = document.getElementById("main");
 const sidebar = document.getElementById("sidebar");
+const layout = document.getElementById("layout");
 const menuBtn = document.getElementById("menuBtn");
+const toggleBtn = document.getElementById("toggleBtn");
 
 let activeId = null;
 
+function findActive() {
+  for (const d of SKILLS) for (const s of d.skills) {
+    if (s.id === activeId) return { skill: s, domain: d };
+  }
+  return null;
+}
+
 function render() {
-  // build nav
+  // build expanded nav
   nav.innerHTML = "";
   for (const d of SKILLS) {
     const wrap = document.createElement("div");
     wrap.className = "domain";
     const h = document.createElement("h3");
-    h.textContent = d.domain;
+    const iconSpan = document.createElement("span");
+    iconSpan.className = "domain-icon";
+    iconSpan.textContent = d.icon;
+    h.appendChild(iconSpan);
+    h.appendChild(document.createTextNode(d.domain));
     wrap.appendChild(h);
     const ul = document.createElement("ul");
     for (const s of d.skills) {
@@ -734,31 +836,40 @@ function render() {
       li.textContent = s.name;
       li.dataset.id = s.id;
       if (s.id === activeId) li.classList.add("active");
-      li.addEventListener("click", () => {
-        activeId = s.id;
-        render();
-        if (window.innerWidth <= 820) sidebar.classList.remove("open");
-        history.replaceState(null, "", "#" + s.id);
-        main.scrollTo({ top: 0, behavior: "instant" });
-        window.scrollTo({ top: 0, behavior: "instant" });
-      });
+      li.addEventListener("click", () => navigateTo(s.id));
       ul.appendChild(li);
     }
     wrap.appendChild(ul);
     nav.appendChild(wrap);
   }
-  // build main
-  let active = null;
-  let activeDomain = null;
-  for (const d of SKILLS) for (const s of d.skills) {
-    if (s.id === activeId) { active = s; activeDomain = d.domain; }
+
+  // build collapsed icon rail
+  rail.innerHTML = "";
+  const activeInfo = findActive();
+  const activeDomainName = activeInfo ? activeInfo.domain.domain : null;
+  for (const d of SKILLS) {
+    const btn = document.createElement("div");
+    btn.className = "rail-icon";
+    btn.textContent = d.icon;
+    btn.title = d.domain;
+    if (d.domain === activeDomainName) btn.classList.add("active");
+    btn.addEventListener("click", () => navigateTo(d.skills[0].id));
+    rail.appendChild(btn);
   }
-  if (!active) { main.innerHTML = ""; return; }
+
+  // build main
+  if (!activeInfo) { main.innerHTML = ""; return; }
+  const active = activeInfo.skill;
+  const activeDomain = activeInfo.domain;
 
   main.innerHTML = "";
   const crumb = document.createElement("p");
   crumb.className = "crumb";
-  crumb.textContent = activeDomain;
+  const crumbIcon = document.createElement("span");
+  crumbIcon.className = "domain-icon";
+  crumbIcon.textContent = activeDomain.icon;
+  crumb.appendChild(crumbIcon);
+  crumb.appendChild(document.createTextNode(activeDomain.domain));
   main.appendChild(crumb);
 
   const h1 = document.createElement("h1");
@@ -828,12 +939,45 @@ function render() {
   main.appendChild(footer);
 }
 
+function navigateTo(id) {
+  activeId = id;
+  render();
+  if (window.innerWidth <= 820) sidebar.classList.remove("open");
+  history.replaceState(null, "", "#" + id);
+  main.scrollTo({ top: 0, behavior: "instant" });
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+function applyCollapsed(collapsed) {
+  if (collapsed) {
+    layout.classList.add("collapsed");
+    toggleBtn.textContent = "›";
+    toggleBtn.title = "Expand sidebar";
+    toggleBtn.setAttribute("aria-label", "Expand sidebar");
+  } else {
+    layout.classList.remove("collapsed");
+    toggleBtn.textContent = "‹";
+    toggleBtn.title = "Collapse sidebar";
+    toggleBtn.setAttribute("aria-label", "Collapse sidebar");
+  }
+}
+
 // initial route from hash
 const hash = location.hash.replace("#", "");
 if (hash) activeId = hash;
 else activeId = SKILLS[0].skills[0].id;
 
+// initial collapsed state from localStorage
+const savedCollapsed = localStorage.getItem("human101.collapsed") === "1";
+applyCollapsed(savedCollapsed);
+
 render();
+
+toggleBtn.addEventListener("click", () => {
+  const willCollapse = !layout.classList.contains("collapsed");
+  applyCollapsed(willCollapse);
+  localStorage.setItem("human101.collapsed", willCollapse ? "1" : "0");
+});
 
 menuBtn.addEventListener("click", () => sidebar.classList.toggle("open"));
 window.addEventListener("hashchange", () => {
